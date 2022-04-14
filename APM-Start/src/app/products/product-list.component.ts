@@ -23,6 +23,7 @@ export class ProductListComponent implements OnInit {
     this.products$ = this.productService.getProducts().pipe(
       catchError(err=>{
         this.errorMessage = err;
+        console.log(this.errorMessage)
         return EMPTY;
       })
     );
