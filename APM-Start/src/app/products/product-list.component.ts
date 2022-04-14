@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import { catchError, EMPTY, Observable, Subscription } from 'rxjs';
+import { catchError, EMPTY, Observable } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
 
 import { Product } from './product';
@@ -10,24 +10,19 @@ import { ProductService } from './product.service';
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent {
   pageTitle = 'Product List';
   errorMessage = '';
   categories: ProductCategory[] = [];
 
-  products$: Observable<Product[]> | undefined;
+  products$: Observable<Product[]> = this.productService.getProducts().pipe(
+    catchError(err => {
+      this.errorMessage = err;
+      console.log(this.errorMessage)
+      return EMPTY;
+    }));
 
   constructor(private productService: ProductService) { }
-
-  ngOnInit(): void {
-    this.products$ = this.productService.getProducts().pipe(
-      catchError(err=>{
-        this.errorMessage = err;
-        console.log(this.errorMessage)
-        return EMPTY;
-      })
-    );
-  }
 
   onAdd(): void {
     console.log('Not yet implemented');
