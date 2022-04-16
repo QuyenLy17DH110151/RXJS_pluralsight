@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { catchError, map, Observable, tap, throwError } from 'rxjs';
+import { catchError, forkJoin, map, Observable, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
+import { ProductCategory } from '../product-categories/product-category';
 
 @Injectable({
   providedIn: 'root'
@@ -12,21 +13,28 @@ import { ProductCategoryService } from '../product-categories/product-category.s
 export class ProductService {
   private productsUrl = 'api/products';
   private suppliersUrl = 'api/suppliers';
-  
-  constructor(private http: HttpClient, private productCategory: ProductCategoryService) { }
 
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.productsUrl)
-      .pipe( 
-        map(products => products.map(product=>({
-          ...product,
-          price: product.price ? product.price * 1.5 : 0,
-          searchKey: [product.productName],
-        }) as Product)),  
-        tap(data => console.log('Products: ', JSON.stringify(data))),
-        catchError(this.handleError)
-      );
-  }
+  constructor(private http: HttpClient, private productCategoryService: ProductCategoryService) { }
+
+  products$: Observable<Product[]> = this.http.get<Product[]>(this.productsUrl)
+    .pipe(
+      tap(data => console.log('Products: ', JSON.stringify(data))),
+      catchError(this.handleError)
+    );
+
+  productsWithCategory$: Observable<Product[]> = forkJoin([
+    this.products$,
+    this.productCategoryService.productCategories$
+  ]).pipe(
+    map(([products, categories]: [Product[], ProductCategory[]]) =>
+      products.map((product) => ({
+        ...product,
+        price: product.price ? product.price * 1.5 : 0,
+        searchKey: [product.productName],
+        category: categories.find(c => product.categoryId === c.id)?.name,
+      } as Product)))
+  );
+
 
   private fakeProduct(): Product {
     return {
