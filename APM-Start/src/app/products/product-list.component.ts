@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { catchError, combineLatest, EMPTY, map, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, EMPTY, map, Observable, Subject } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 
@@ -14,7 +14,7 @@ import { ProductService } from './product.service';
 export class ProductListComponent {
   pageTitle = 'Product List';
   errorMessage = '';
-  private selectedCategoryIdSubject = new Subject<number>();
+  private selectedCategoryIdSubject = new BehaviorSubject<number>(0);
   selectedCategoryIdSubject$ = this.selectedCategoryIdSubject.asObservable();
   products$: Observable<Product[]> = combineLatest([this.productService.productsWithCategory$, this.selectedCategoryIdSubject$]).pipe(
     map(([products, selectedCategory]) => products.filter(product => {
