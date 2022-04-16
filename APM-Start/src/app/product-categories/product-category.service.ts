@@ -14,9 +14,7 @@ export class ProductCategoryService {
 
   productCategories$ = this.http.get<ProductCategory[]>(
     this.productCategoriesUrl)
-    .pipe(tap(data => {
-      return console.log("🚀 ~ file: product-category.service.ts ~ line 18 ~ ProductCategoryService ~ data", data);
-    }),
+    .pipe(
       catchError(this.handleError)
     );
 
