@@ -16,7 +16,8 @@ export class ProductListComponent {
   errorMessage = '';
   private selectedCategoryIdSubject = new BehaviorSubject<number>(0);
   selectedCategoryIdSubject$ = this.selectedCategoryIdSubject.asObservable();
-  products$: Observable<Product[]> = combineLatest([this.productService.productsWithCategory$, this.selectedCategoryIdSubject$]).pipe(
+  
+  products$: Observable<Product[]> = combineLatest([this.productService.productsWithAdd$, this.selectedCategoryIdSubject$]).pipe(
     map(([products, selectedCategory]) => products.filter(product => {
       return selectedCategory ? product.categoryId === selectedCategory : true;
     })),
@@ -30,7 +31,7 @@ export class ProductListComponent {
   categories$: Observable<ProductCategory[]> = this.productCategoryService.productCategories$.pipe();
 
   onAdd(): void {
-    console.log('Not yet implemented');
+    this.productService.onAdd();
   }
 
   onSelected(categoryId: string): void {
