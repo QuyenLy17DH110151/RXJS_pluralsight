@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { BehaviorSubject, catchError, combineLatest, forkJoin, map, merge, Observable, scan, Subject, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, forkJoin, map, merge, Observable, scan, shareReplay, Subject, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -49,7 +49,8 @@ export class ProductService {
   private productInsertSubject = new Subject<Product>();
   productInsertedAction$ = this.productInsertSubject.asObservable();
   productsWithAdd$ = merge(this.productsWithCategory$, this.productInsertedAction$).pipe(
-    scan((acc, value) => (value instanceof Array) ? [...value] : [...acc, value], [] as Product[])
+    scan((acc, value) => (value instanceof Array) ? [...value] : [...acc, value], [] as Product[]),
+    shareReplay(1)
   );
 
   onAdd(newProduct?: Product): void {
