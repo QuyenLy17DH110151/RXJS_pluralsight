@@ -14,7 +14,9 @@ export class ProductDetailComponent {
   pageTitle = 'Product Detail';
   errorMessage = '';
   product: Product | null = null;
-  productSuppliers: Supplier[] | null = null;
+  productSuppliers$ = this.productService.selectedProductSuppliers$.pipe(
+    catchError(this.hanldeError)
+  );
 
   product$: Observable<Product | undefined> = this.productService.selectedProduct$.pipe(catchError(this.hanldeError));
 

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { BehaviorSubject, catchError, combineLatest, forkJoin, map, merge, Observable, scan, shareReplay, Subject, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineAll, combineLatest, forkJoin, map, merge, Observable, scan, shareReplay, Subject, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 import { ProductCategory } from '../product-categories/product-category';
 import { SupplierService } from '../suppliers/supplier.service';
+import { Supplier } from '../suppliers/supplier';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class ProductService {
 
   products$: Observable<Product[]> = this.http.get<Product[]>(this.productsUrl)
     .pipe(
-      // tap(data => console.log('Products: ', JSON.stringify(data))),
+      tap(data => console.log('Products: ', JSON.stringify(data))),
       catchError(this.handleError)
     );
 
@@ -58,6 +59,10 @@ export class ProductService {
     newProduct = newProduct || this.fakeProduct();
     this.productInsertSubject.next(newProduct);
   }
+
+  selectedProductSuppliers$: Observable<Supplier[]> = combineLatest([this.selectedProduct$, this.supplierService.suppliers$]).pipe(
+    map(([selectedProduct, suppliers]) => suppliers.filter(supplier => selectedProduct?.supplierIds?.includes(supplier.id)))
+  );
 
   private fakeProduct(): Product {
     return {

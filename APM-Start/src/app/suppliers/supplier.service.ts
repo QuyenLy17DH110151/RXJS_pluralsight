@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { throwError, Observable, of, concatMap, map, tap, mergeMap, switchMap } from 'rxjs';
+import { throwError, Observable, of, concatMap, map, tap, mergeMap, switchMap, catchError, shareReplay } from 'rxjs';
 import { Supplier } from './supplier';
 
 @Injectable({
@@ -9,6 +9,12 @@ import { Supplier } from './supplier';
 })
 export class SupplierService {
   suppliersUrl = 'api/suppliers';
+  suppliers$: Observable<Supplier[]> = this.http.get<Supplier[]>(`${this.suppliersUrl}`).pipe(
+    tap(data =>
+      console.log("🚀 ~ file: supplier.service.ts ~ line 14 ~ SupplierService ~ data", data)),
+    shareReplay(1),
+    catchError(this.handleError)
+  );
   constructor(private http: HttpClient) {
   }
 
