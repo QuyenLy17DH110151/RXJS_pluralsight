@@ -9,32 +9,6 @@ import { Supplier } from './supplier';
 })
 export class SupplierService {
   suppliersUrl = 'api/suppliers';
-
-  supplierWithMap$ = of(1, 5, 8).pipe(
-    map(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
-  );
-
-  supplierWitConCathMap$ = of(1, 5, 8).pipe(
-    tap(id => {
-      console.log("🚀 ~ file: supplier.service.ts ~ line 19 ~ SupplierService ~ id", id)
-    }),
-    concatMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
-  );
-
-  supplierWitMergeMap$ = of(1, 5, 8).pipe(
-    tap(id => {
-    console.log("🚀 ~ file: supplier.service.ts ~ line 26 ~ SupplierService ~ id", id)
-    }),
-    mergeMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
-  );
-
-  supplierWithSwitchMap$ = of(1, 5, 8).pipe(
-    tap(id => {
-    console.log("🚀 ~ file: supplier.service.ts ~ line 26 ~ SupplierService ~ id", id)
-    }),
-    switchMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
-  );
-
   constructor(private http: HttpClient) {
   }
 
