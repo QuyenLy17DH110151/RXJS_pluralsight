@@ -6,6 +6,7 @@ import { BehaviorSubject, catchError, combineLatest, forkJoin, map, merge, Obser
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 import { ProductCategory } from '../product-categories/product-category';
+import { SupplierService } from '../suppliers/supplier.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +17,11 @@ export class ProductService {
   private productSelectedSubject = new BehaviorSubject<number>(0);
   productSelectedAction$ = this.productSelectedSubject.asObservable();
 
-  constructor(private http: HttpClient, private productCategoryService: ProductCategoryService) { }
+  constructor(private http: HttpClient, private productCategoryService: ProductCategoryService, private supplierService:SupplierService) { }
 
   products$: Observable<Product[]> = this.http.get<Product[]>(this.productsUrl)
     .pipe(
-      tap(data => console.log('Products: ', JSON.stringify(data))),
+      // tap(data => console.log('Products: ', JSON.stringify(data))),
       catchError(this.handleError)
     );
 
